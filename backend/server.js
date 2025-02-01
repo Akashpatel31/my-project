@@ -8,7 +8,7 @@ app.use(cors());
 
 // Your existing route
 app.get('/', (req, res) => {
-  res.json({ message: "Hello from Node.js backend!" });
+  res.json({ message: "Hello from Node.js backend new!" });
 });
 
 // Set the port for the backend
