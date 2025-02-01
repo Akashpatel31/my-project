@@ -1,0 +1,118 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Trigger pipeline on push to main branch
+  pull_request:
+    branches:
+      - main  # Trigger pipeline on PR targeting main
+
+jobs:
+  # Backend Build & SonarQube
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Node.js for the backend
+    - name: Set up Node.js (for Backend)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    # Install dependencies and run tests for Backend
+    - name: Install Backend Dependencies
+      working-directory: ./backend
+      run: |
+        npm install
+
+    - name: Run Backend Tests (if any)
+      working-directory: ./backend
+      run: |
+        npm test  # Make sure you have a test script in your backend package.json
+
+    # Build Docker image for Backend
+    - name: Build Backend Docker image
+      run: |
+        docker build -t my-backend ./backend
+
+    # Push Backend Docker image to Docker Hub
+    - name: Push Backend Docker image
+      run: |
+        docker login -u ${{ akash3103 }} -p ${{ Akash@31 }}
+        docker push my-backend
+
+  # Frontend Build & Dockerization (React with Vite)
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up Node.js for the frontend (React with Vite)
+    - name: Set up Node.js (for Frontend)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    # Install dependencies and build the frontend
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
+      run: |
+        npm install
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build  # This uses Vite to build the frontend
+
+    # Build Docker image for Frontend
+    - name: Build Frontend Docker image
+      run: |
+        docker build -t my-frontend ./frontend
+
+    # Push Frontend Docker image to Docker Hub
+    - name: Push Frontend Docker image
+      run: |
+        docker push my-frontend
+
+  # Deploy to Kubernetes (or cloud server)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]  # Run deploy after backend and frontend jobs
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up kubectl (Kubernetes CLI)
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v2
+      with:
+        version: 'v1.21.0'
+
+    # Deploy Backend to Kubernetes
+    - name: Deploy Backend to Kubernetes
+      run: |
+        kubectl apply -f k8s/backend-deployment.yaml
+        kubectl apply -f k8s/backend-service.yaml
+
+    # Deploy Frontend to Kubernetes
+    - name: Deploy Frontend to Kubernetes
+      run: |
+        kubectl apply -f k8s/frontend-deployment.yaml
+        kubectl apply -f k8s/frontend-service.yaml
+
+  # Clean up after deployment
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+
+    steps:
+    - name: Clean up Docker images
+      run: |
+        docker system prune -f
