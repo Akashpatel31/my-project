@@ -25,26 +25,26 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ akash3103 }}
-          password: ${{ Akash@31 }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Step 4: Build the Docker images for frontend and backend
       - name: Build backend Docker image
         run: |
-          docker build -t ${{ akash3103 }}/backend:$GITHUB_SHA -f backend/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:$GITHUB_SHA -f backend/Dockerfile .
 
       - name: Build frontend Docker image
         run: |
-          docker build -t ${{ akash3103 }}/frontend:$GITHUB_SHA -f frontend/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend:$GITHUB_SHA -f frontend/Dockerfile .
 
       # Step 5: Push the images to Docker Hub
       - name: Push backend image to Docker Hub
         run: |
-          docker push ${{ akash3103 }}/backend:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/backend:$GITHUB_SHA
 
       - name: Push frontend image to Docker Hub
         run: |
-          docker push ${{ akash3103 }}/frontend:$GITHUB_SHA
+          docker push ${{ secrets.DOCKER_USERNAME }}/frontend:$GITHUB_SHA
 
       # Step 6: Set up Kubeconfig for Kubernetes
       - name: Set up Kubeconfig
