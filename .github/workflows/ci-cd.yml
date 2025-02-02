@@ -36,15 +36,19 @@ jobs:
       run: |
         npm run build  # Build frontend app
 
+    - name: Debug: Show Docker Username
+      run: |
+        echo "Using Docker Username: ${{ secrets.DOCKER_USERNAME }}"  # Debug to show the Docker username
+
     - name: Build Docker image for Backend
       run: |
-        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/backend:latest"
+        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/backend:latest"  # Use secrets to insert Docker username
         echo "🔹 Building Docker image: $IMAGE_NAME"
         docker build -t $IMAGE_NAME ./backend  # Build backend Docker image
 
     - name: Build Docker image for Frontend
       run: |
-        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/frontend:latest"
+        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/frontend:latest"  # Use secrets to insert Docker username
         echo "🔹 Building Docker image: $IMAGE_NAME"
         docker build -t $IMAGE_NAME ./frontend  # Build frontend Docker image
 
