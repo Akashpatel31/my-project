@@ -3,41 +3,91 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
-  build:
+  # Backend Build & Analysis
+  backend:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    # Setup Node.js for Backend
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20'
 
+    # Install backend dependencies
     - name: Install dependencies (Backend)
       working-directory: ./backend
       run: |
-        npm install  # Install backend dependencies
+        npm install
 
+    # Build Backend
+    - name: Build Backend
+      working-directory: ./backend
+      run: |
+        npm run build
+
+    # Backend Docker Build
+    - name: Build Backend Docker image
+      run: |
+        docker build -t my-backend ./backend
+
+    # Push Backend Docker image to Docker Hub
+    - name: Push Backend Docker image to Docker Hub
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker push my-backend
+
+  # Frontend Build
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Setup Node.js for Frontend
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    # Install frontend dependencies
     - name: Install dependencies (Frontend)
       working-directory: ./frontend
       run: |
-        npm install  # Install frontend dependencies
+        npm install
 
+    # Build Frontend
     - name: Build Frontend
       working-directory: ./frontend
       run: |
-        npm run build  # Build frontend app
+        npm run build
 
-    - name: Build Docker image for Backend
+    # Frontend Docker Build
+    - name: Build Frontend Docker image
       run: |
-        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/backend:latest"  # Use secrets to insert Docker username
-        echo "🔹 Building Docker image: $IMAGE_NAME"
-        docker build
+        docker build -t my-frontend ./frontend
+
+    # Push Frontend Docker image to Docker Hub
+    - name: Push Frontend Docker image to Docker Hub
+      run: |
+        docker push my-frontend
+
+  # Clean up after deployment
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+    - name: Clean up Docker images
+      run: |
+        docker system prune -f
