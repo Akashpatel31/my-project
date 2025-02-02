@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   # Backend Build & Analysis
@@ -29,11 +29,11 @@ jobs:
       run: |
         npm install
 
-    # Build Backend
-    - name: Build Backend
+    # Start Backend
+    - name: Start Backend
       working-directory: ./backend
       run: |
-        npm run build
+        node server.js
 
     # Backend Docker Build
     - name: Build Backend Docker image
