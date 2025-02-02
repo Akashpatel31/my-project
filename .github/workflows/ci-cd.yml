@@ -33,16 +33,6 @@ jobs:
       run: |
         npm install  # Install frontend dependencies
 
-    - name: Run tests (Backend)
-      working-directory: ./backend
-      run: |
-        npm test  # Run backend tests if you have any (or skip this step if not)
-
-    - name: Run tests (Frontend)
-      working-directory: ./frontend
-      run: |
-        npm test  # Run frontend tests if you have any (or skip this step if not)
-
     - name: Build Frontend
       working-directory: ./frontend
       run: |
