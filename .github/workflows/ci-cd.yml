@@ -1,47 +1,71 @@
 name: CI/CD Pipeline
 
+# Trigger the workflow on push to the 'main' branch or any other branch you choose
 on:
   push:
     branches:
-      - master
+      - main
+  pull_request:
+    branches:
+      - main
 
+# Define the environment for the jobs
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu image for the environment
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2  # Checkout the code from the repository
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        node-version: '20'  # Set the Node.js version you want to use
 
-    - name: Build and Push Backend Image
+    - name: Install dependencies (Backend)
+      working-directory: ./backend
       run: |
-        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/backend:latest"
-        echo "🔹 Building Docker image: $IMAGE_NAME"
-        docker build -t $IMAGE_NAME ./backend
-        docker push $IMAGE_NAME
+        npm install  # Install backend dependencies
 
-    - name: Build and Push Frontend Image
+    - name: Install dependencies (Frontend)
+      working-directory: ./frontend
       run: |
-        IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/frontend:latest"
-        echo "🔹 Building Docker image: $IMAGE_NAME"
-        docker build -t $IMAGE_NAME ./frontend
-        docker push $IMAGE_NAME
+        npm install  # Install frontend dependencies
 
-    - name: Run Backend Container
+    - name: Run tests (Backend)
+      working-directory: ./backend
       run: |
-        echo "🔹 Running Backend container"
-        docker run -d -p 5001:5001 ${{ secrets.DOCKER_USERNAME }}/backend:latest
+        npm test  # Run backend tests if you have any (or skip this step if not)
 
-    - name: Run Frontend Container
+    - name: Run tests (Frontend)
+      working-directory: ./frontend
       run: |
-        echo "🔹 Running Frontend container"
-        docker run -d -p 5173:80 ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+        npm test  # Run frontend tests if you have any (or skip this step if not)
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build  # Build frontend app
+
+    - name: Build Docker image for Backend
+      run: |
+        docker build -t my-backend ./backend  # Build backend Docker image
+
+    - name: Build Docker image for Frontend
+      run: |
+        docker build -t my-frontend ./frontend  # Build frontend Docker image
+
+    - name: Push Docker images to Docker Hub
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker push my-backend  # Push backend image to Docker Hub
+        docker push my-frontend  # Push frontend image to Docker Hub
+
+    - name: Deploy Docker containers to production
+      run: |
+        ssh user@your-server "docker pull my-backend && docker pull my-frontend && docker-compose up -d"
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+  # Optionally add a deployment job for Kubernetes or any cloud provider if necessary
