@@ -34,18 +34,22 @@ jobs:
       run: |
         docker build -t my-project-backend ./backend
 
-    # Login to Docker registry (Optional if you want to use another registry)
-    - name: Login to Docker
+    # Login to Docker Hub
+    - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Push Backend Docker image to Render (GitHub integration required)
-    - name: Push Backend Docker image to Render
+    # Tag Backend Docker image for Docker Hub
+    - name: Tag Backend Docker image for Docker Hub
       run: |
-        docker tag my-project-backend registry.render.com/akashpatel31/my-test-project/backend-docker:latest
-        docker push registry.render.com/akashpatel31/backend-docker:latest
+        docker tag my-project-backend docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-backend:latest
+
+    # Push Backend Docker image to Docker Hub
+    - name: Push Backend Docker image to Docker Hub
+      run: |
+        docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-backend:latest
 
   # Frontend Build & Deploy
   frontend:
@@ -78,18 +82,22 @@ jobs:
       run: |
         docker build -t my-project-frontend ./frontend
 
-    # Login to Docker registry (Optional if you want to use another registry)
-    - name: Login to Docker
+    # Login to Docker Hub
+    - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Push Frontend Docker image to Render (GitHub integration required)
-    - name: Push Frontend Docker image to Render
+    # Tag Frontend Docker image for Docker Hub
+    - name: Tag Frontend Docker image for Docker Hub
       run: |
-        docker tag my-project-frontend registry.render.com/akashpatel31/my-test-project/frontend:latest
-        docker push registry.render.com/akashpatel31/frontend:latest
+        docker tag my-project-frontend docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-frontend:latest
+
+    # Push Frontend Docker image to Docker Hub
+    - name: Push Frontend Docker image to Docker Hub
+      run: |
+        docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-frontend:latest
 
   # Clean up after deployment
   cleanup:
