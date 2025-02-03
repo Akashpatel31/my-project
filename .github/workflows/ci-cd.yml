@@ -44,12 +44,12 @@ jobs:
     # Tag Backend Docker image for Docker Hub
     - name: Tag Backend Docker image for Docker Hub
       run: |
-        docker tag my-project-backend docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-backend:latest
+        docker tag my-project-backend docker.io/akash3103/my-project-backend:latest
 
     # Push Backend Docker image to Docker Hub
     - name: Push Backend Docker image to Docker Hub
       run: |
-        docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-backend:latest
+        docker push docker.io/akash3103/my-project-backend:latest
 
   # Frontend Build & Deploy
   frontend:
@@ -92,12 +92,12 @@ jobs:
     # Tag Frontend Docker image for Docker Hub
     - name: Tag Frontend Docker image for Docker Hub
       run: |
-        docker tag my-project-frontend docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-frontend:latest
+        docker tag my-project-frontend docker.io/akash3103/my-project-frontend:latest
 
     # Push Frontend Docker image to Docker Hub
     - name: Push Frontend Docker image to Docker Hub
       run: |
-        docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-test-project-frontend:latest
+        docker push docker.io/akash3103/my-project-frontend:latest
 
   # Clean up after deployment
   cleanup:
