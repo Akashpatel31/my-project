@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - dev
   pull_request:
     branches:
-      - master
+      - dev
 
 jobs:
   # Backend Build & Deploy
@@ -98,6 +98,14 @@ jobs:
     - name: Push Frontend Docker image to Docker Hub
       run: |
         docker push docker.io/akash3103/my-project-frontend:latest
+
+     # Deploy to Kubernetes using kubectl
+      - name: Set up Kubernetes
+        run: |
+          kubectl apply -f kubernetes/backend-deployment.yaml
+          kubectl apply -f kubernetes/frontend-deployment.yaml
+          kubectl apply -f kubernetes/backend-service.yaml
+          kubectl apply -f kubernetes/frontend-service.yaml
 
   # Clean up after deployment
   cleanup:
