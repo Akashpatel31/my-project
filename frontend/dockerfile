@@ -1,7 +1,6 @@
-# Step 1: Build the application
+# Step 1: Use the official Node.js image for the build stage
 FROM node:20 AS build
 
-# Set working directory
 WORKDIR /app
 
 # Install dependencies
@@ -14,14 +13,19 @@ COPY frontend/ .
 # Build the Vite application
 RUN npm run build
 
-# Step 2: Serve the application with Nginx (you can use other servers like serve)
-FROM nginx:alpine
+# Step 2: Serve the application using Node.js
+FROM node:20
 
-# Copy the built Vite files to Nginx's HTML folder
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Expose the port Nginx will run on
-EXPOSE 80
+# Copy the built files from the build stage
+COPY --from=build /app/dist /app/dist
 
-# Start Nginx to serve the built app
-CMD ["nginx", "-g", "daemon off;"]
+# Install a simple HTTP server to serve the built app
+RUN npm install -g serve
+
+# Expose the port for the web service
+EXPOSE 5173
+
+# Command to start the web service (serve the static files)
+CMD ["serve", "-s", "dist", "-l", "5173"]

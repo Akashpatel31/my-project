@@ -3,10 +3,57 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  # Build and push Docker image for Frontend
+  # Backend Build & Deploy
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Setup Node.js for Backend
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    # Install backend dependencies
+    - name: Install dependencies (Backend)
+      working-directory: ./backend
+      run: |
+        npm install
+
+    # Start Backend
+    - name: Start Backend
+      working-directory: ./backend
+      run: |
+        node server.js
+
+    # Backend Docker Build
+    - name: Build Backend Docker image
+      run: |
+        docker build -t my-project-backend ./backend
+
+    # Login to Docker registry (Optional if you want to use another registry)
+    - name: Login to Docker
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Push Backend Docker image to Render (GitHub integration required)
+    - name: Push Backend Docker image to Render
+      run: |
+        docker tag my-project-backend registry.render.com/akashpatel31/backend:latest
+        docker push registry.render.com/akashpatel31/backend:latest
+
+  # Frontend Build & Deploy
   frontend:
     runs-on: ubuntu-latest
 
@@ -14,13 +61,48 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    # Setup Node.js for Frontend
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
 
-    - name: Log in to Render Registry
-      run: echo ${{ secrets.RENDER_REGISTRY_PASSWORD }} | docker login registry.render.com -u ${{ secrets.RENDER_REGISTRY_USERNAME }} --password-stdin
+    # Install frontend dependencies
+    - name: Install dependencies (Frontend)
+      working-directory: ./frontend
+      run: |
+        npm install
 
+    # Build Frontend
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build
+
+    # Frontend Docker Build
     - name: Build Frontend Docker image
       run: |
-        docker build -t registry.render.com/<your-username>/my-project-frontend:latest ./frontend
-        docker push registry.render.com/<your-username>/my-project-frontend:latest
+        docker build -t my-project-frontend ./frontend
+
+    # Login to Docker registry (Optional if you want to use another registry)
+    - name: Login to Docker
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Push Frontend Docker image to Render (GitHub integration required)
+    - name: Push Frontend Docker image to Render
+      run: |
+        docker tag my-project-frontend registry.render.com/akashpatel31/my-project-2:latest
+        docker push registry.render.com/akashpatel31/my-project-2:latest
+
+  # Clean up after deployment
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+    - name: Clean up Docker images
+      run: |
+        docker system prune -f
