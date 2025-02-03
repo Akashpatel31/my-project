@@ -9,24 +9,17 @@ on:
       - dev
 
 jobs:
-  # SonarQube Analysis
   sonarqube:
-    name: SonarQube Scan
-    runs-on: ubuntu-latest
-
+    name: SonarQube
+    runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
-
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          sonar-project-key: "my-project-key"  # Replace with your SonarCloud project key
-          sonar-project-name: "My Project"  # Replace with your project name
 
   # Backend Build & Deploy
   backend:
