@@ -14,7 +14,7 @@ app.get('/health', (req, res) => {
 
 // Default route
 app.get('/', (req, res) => {
-  res.json({ message: "Hello from Node.js is dp is c!" });
+  res.json({ message: "Hello from Node.js is the best !" });
 });
 
 // Set the port for the backend
