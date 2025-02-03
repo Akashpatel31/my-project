@@ -44,8 +44,8 @@ jobs:
     # Push Backend Docker image to Render (GitHub integration required)
     - name: Push Backend Docker image to Render
       run: |
-        docker tag my-project-backend registry.render.com/akashpatel31/backend:latest
-        docker push registry.render.com/akashpatel31/backend:latest
+        docker tag my-project-backend registry.render.com/akashpatel31/backend-docker:latest
+        docker push registry.render.com/akashpatel31/backend-docker:latest
 
   # Frontend Build & Deploy
   frontend:
@@ -88,8 +88,8 @@ jobs:
     # Push Frontend Docker image to Render (GitHub integration required)
     - name: Push Frontend Docker image to Render
       run: |
-        docker tag my-project-frontend registry.render.com/akashpatel31/my-project-2:latest
-        docker push registry.render.com/akashpatel31/my-project-2:latest
+        docker tag my-project-frontend registry.render.com/akashpatel31/frontend:latest
+        docker push registry.render.com/akashpatel31/frontend:latest
 
   # Clean up after deployment
   cleanup:
