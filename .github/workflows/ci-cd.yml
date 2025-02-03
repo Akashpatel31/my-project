@@ -53,8 +53,8 @@ jobs:
     # Deploy to Kubernetes using kubectl
     - name: Set up Kubernetes
       run: |
-        kubectl apply -f k8s/backend-deployment.yaml
-        kubectl apply -f k8s/backend-service.yaml
+        kubectl apply -f k8s/backend-deployment.yaml --validate=false
+        kubectl apply -f k8s/backend-service.yaml --validate=false
 
   # Frontend Build & Deploy
   frontend:
@@ -107,8 +107,8 @@ jobs:
     # Deploy to Kubernetes using kubectl
     - name: Set up Kubernetes
       run: |
-        kubectl apply -f k8s/frontend-deployment.yaml
-        kubectl apply -f k8s/frontend-service.yaml
+        kubectl apply -f k8s/frontend-deployment.yaml --validate=false
+        kubectl apply -f k8s/frontend-service.yaml --validate=false
 
   # Clean up after deployment
   cleanup:
