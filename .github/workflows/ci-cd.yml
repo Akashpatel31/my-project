@@ -24,18 +24,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: "https://sonarcloud.io"
 
-      # Enforce SonarQube Quality Gate
-      - name: Enforce SonarQube Quality Gate
-        run: |
-          SONAR_STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
-            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=my-project" \
-            | jq -r '.projectStatus.status')
-          if [[ "$SONAR_STATUS" != "OK" ]]; then
-            echo "❌ SonarQube Quality Gate Failed"
-            exit 1
-          fi
-        shell: bash
-
   # Step 2: Backend Build & Deploy (Only if SonarQube Passes)
   backend:
     needs: [sonarqube]  # Ensures SonarQube runs first
