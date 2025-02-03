@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -13,10 +13,10 @@ spec:
         app: backend
     spec:
       containers:
-        - name: backend
-          image: my-backend:latest
-          ports:
-            - containerPort: 5001
+      - name: backend
+        image: docker.io/akash3103/my-project-backend:latest
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -27,6 +27,6 @@ spec:
     app: backend
   ports:
     - protocol: TCP
-      port: 5001
-      targetPort: 5001
+      port: 8080
+      targetPort: 8080
   type: LoadBalancer
