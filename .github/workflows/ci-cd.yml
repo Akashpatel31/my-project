@@ -50,6 +50,11 @@ jobs:
     - name: Push Backend Docker image to Docker Hub
       run: |
         docker push docker.io/akash3103/my-project-backend:latest
+    # Deploy to Kubernetes using kubectl
+    - name: Set up Kubernetes
+      run: |
+        kubectl apply -f k8s/backend-deployment.yaml
+        kubectl apply -f k8s/backend-service.yaml
 
   # Frontend Build & Deploy
   frontend:
@@ -99,12 +104,10 @@ jobs:
       run: |
         docker push docker.io/akash3103/my-project-frontend:latest
 
-     # Deploy to Kubernetes using kubectl
+    # Deploy to Kubernetes using kubectl
     - name: Set up Kubernetes
       run: |
-        kubectl apply -f k8s/backend-deployment.yaml
         kubectl apply -f k8s/frontend-deployment.yaml
-        kubectl apply -f k8s/backend-service.yaml
         kubectl apply -f k8s/frontend-service.yaml
 
   # Clean up after deployment
