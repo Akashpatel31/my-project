@@ -4,32 +4,12 @@ This project demonstrates a full stack application using React for the frontend,
 Project Structure
 backend/: Contains the Node.js backend code.
 frontend/: Contains the React frontend code.
-docker-compose.yml: The Docker Compose configuration to run both services.
-.gitignore: To ignore unnecessary files like node_modules/ and dist/.
-README.md: This file.
-Requirements
-Docker
-Node.js (for local development)
-Git (for version control)
-Installation
-Clone the repository:
 
-bash
-Copy
-Edit
-git clone https://github.com/yourusername/your-repository-name.git
-cd your-repository-name
-Build and run with Docker Compose:
+docker-compose.yml: The Docker Compose configuration to run both services.
+
+.gitignore: To ignore unnecessary files like node_modules/ and dist/.
 
 You can use Docker Compose to build and run both the frontend and backend services.
-
-bash
-Copy
-Edit
-docker-compose up --build
-This will build both the frontend and backend images and start the containers.
-
-Access the application:
 
 Frontend: [http://localhost:5173/](https://frontend-docker-5k88.onrender.com/)
 Backend: [http://localhost:5001/](https://backend-docker-qou7.onrender.com/)
